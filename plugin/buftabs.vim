@@ -57,11 +57,16 @@
 "   set laststatus=2
 "   :let g:buftabs_in_statusline=1
 "    
-"   By default buftabs will take up the whole of the left-aligned section of
-"   your statusline. You can alternatively specify precisely where it goes
-"   using %{buftabs#statusline()} e.g.:
+"   By default buftabs will take up the whole statusline. You can
+"   alternatively specify precisely where it goes using #{buftabs} e.g.:
 "
-"   set statusline=%=buffers:\ %{buftabs#statusline()}
+"   set statusline=buf:\ #{buftabs}%=\ Line\ %l,\ Column\ %v\ 
+"
+"   If you customize your statusline like above, you will need to specify the
+"   total charactor length of non-buftabs components in the statusline. By
+"   default, it is 0 since there are no other components:
+"
+"   :let g:buftabs_other_components_length=28
 "
 "
 " * g:buftabs_active_highlight_group
@@ -147,7 +152,8 @@
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 let w:buftabs_enabled = 0
-let w:original_statusline = matchstr(&statusline, "%=.*")
+let w:original_statusline_left = matchstr(&statusline, ".*#{buftabs}")
+let w:original_statusline_right = matchstr(&statusline, "#{buftabs}.*")
 
 "
 " Don't bother when in diff mode
@@ -272,7 +278,10 @@ function! Buftabs_show(deleted_buf)
 	" If the resulting list is too long to fit on the screen, chop
 	" out the appropriate part
 
-	let l:width = winwidth(0) - 12
+  let l:width = winwidth(0)
+  if exists("g:buftabs_other_components_length")
+    let l:width -= g:buftabs_other_components_length
+  endif
 
 	if(l:start < w:from) 
 		let w:from = l:start - 1
@@ -313,7 +322,7 @@ function! Buftabs_show(deleted_buf)
 		" Only overwrite the statusline if buftabs#statusline() has not been
 		" used to specify a location
 		if match(&statusline, "%{buftabs#statusline()}") == -1
-			let &l:statusline = s:list . w:original_statusline
+			let &l:statusline = substitute(w:original_statusline_left . s:list . w:original_statusline_right, "#{buftabs}", '', 'g')
 		end
 	else
 		redraw
