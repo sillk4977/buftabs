@@ -352,7 +352,7 @@ autocmd VimEnter * call Buftabs_enable()
 autocmd VimEnter,BufNew,BufEnter,BufWritePost * call Buftabs_show(-1)
 autocmd BufDelete * call Buftabs_show(expand('<abuf>'))
 if version >= 700
-	autocmd InsertLeave,VimResized * call Buftabs_show(-1)
+	autocmd CursorMoved,CursorMovedI,VimResized * call Buftabs_show(-1)
 end
 
 " vi: ts=2 sw=2
