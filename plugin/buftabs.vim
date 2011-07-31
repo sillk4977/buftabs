@@ -239,9 +239,10 @@ function! Buftabs_show(deleted_buf)
 
   while(l:i <= bufnr('$'))
 
-    " Only show buffers in the list, and omit help screens
+    " Only show buffers in the list, and omit help screens unless it is the
+    " current buffer
   
-    if buflisted(l:i) && getbufvar(l:i, "&modifiable") && a:deleted_buf != l:i
+    if buflisted(l:i) && getbufvar(l:i, "&modifiable") && a:deleted_buf != l:i || winbufnr(0) == l:i
 
       " Get the name of the current buffer, and escape characters that might
       " mess up the statusline
@@ -252,13 +253,16 @@ function! Buftabs_show(deleted_buf)
         let l:name = bufname(l:i)
       endif
       let l:name = substitute(l:name, "%", "%%", "g")
+      if l:name == ""
+        let l:name = "[No Name]"
+      endif
       
       " Append the current buffer number and name to the list. If the buffer
       " is the active buffer, enclose it in some magick characters which will
       " be replaced by markers later. If it is modified, it is appended with
       " an appropriate symbol (an exclamation mark by default)
 
-      if winbufnr(winnr()) == l:i
+      if winbufnr(0) == l:i
         let l:start = strlen(s:list)
         let s:list = s:list . "\x01"
       else
@@ -329,11 +333,7 @@ function! Buftabs_show(deleted_buf)
   " (persistent)
 
   if exists("g:buftabs_in_statusline")
-    " Only overwrite the statusline if buftabs#statusline() has not been
-    " used to specify a location
-    "if match(&statusline, "%{buftabs#statusline()}") == -1
-      "let &l:statusline = substitute(w:original_statusline_left . s:list . w:original_statusline_right, "#{buftabs}", '', 'g')
-    "end
+    "TODO implement if(bufname('') not in blacklist)
     let &l:statusline = substitute(s:original_statusline_left . s:list . s:original_statusline_right, "#{buftabs}", '', 'g')
   else
     redraw
@@ -359,8 +359,8 @@ endfunction
 " buffers
 "
 
-autocmd WinEnter * call Buftabs_enable()
-autocmd WinEnter,BufNew,BufEnter,BufWritePost * call Buftabs_show(-1)
+autocmd WinEnter,CmdwinEnter * call Buftabs_enable()
+autocmd WinEnter,CmdwinEnter,BufNew,BufEnter,BufWritePost * call Buftabs_show(-1)
 autocmd BufDelete * call Buftabs_show(expand('<abuf>'))
 if version >= 700
   autocmd CursorMoved,CursorMovedI,VimResized * call Buftabs_show(-1)
