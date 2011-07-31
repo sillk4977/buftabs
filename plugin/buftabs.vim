@@ -366,13 +366,15 @@ endfunction
 
 
 "
-" Optional function returning the current buftabs list string which can
-" be used inside the statusline string using the %{buftabs#statusline()}
-" syntax
+" Check if modified flag is changed for the current buffer, refresh buftabs if
+" it is changed
 "
 
-function! buftabs#statusline(...)
-  return s:list
+function! Buftabs_check_mod()
+  if ! exists("b:buftabs_mod") || b:buftabs_mod != getbufvar(winbufnr(0), "&mod")
+    let b:buftabs_mod = getbufvar(winbufnr(0), "&mod")
+    call Buftabs_show(-1)
+  endif
 endfunction
 
 
@@ -386,7 +388,7 @@ autocmd CmdwinEnter,BufNew,BufEnter,BufWritePost * call Buftabs_show(-1)
 autocmd BufDelete * call Buftabs_show(expand('<abuf>'))
 if version >= 700
   autocmd CursorMoved,CursorMovedI,VimResized * call Buftabs_show(-1)
-  "TODO implement if(buffer_modified_changed) to CursorMoved,CursorMovedI
+  autocmd CursorMoved,CursorMovedI * call Buftabs_check_mod()
 end
 
 " vi: ts=2 sw=2
