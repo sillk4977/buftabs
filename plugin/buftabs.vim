@@ -384,12 +384,9 @@ endfunction
 "
 
 autocmd CmdwinEnter,BufEnter * call Buftabs_enable()
-autocmd CmdwinEnter,BufNew,BufEnter,BufWritePost * call Buftabs_show(-1)
+autocmd CmdwinEnter,BufNew,BufEnter,BufWritePost,VimResized * call Buftabs_show(-1)
 autocmd BufDelete * call Buftabs_show(expand('<abuf>'))
-if version >= 700
-  autocmd CursorMoved,CursorMovedI,VimResized * call Buftabs_show(-1)
-  autocmd CursorMoved,CursorMovedI * call Buftabs_check_mod()
-end
+autocmd CursorMoved,CursorMovedI * call Buftabs_check_mod()
 
 " vi: ts=2 sw=2
 
