@@ -88,13 +88,22 @@
 "
 "   These strings are drawn around each tab as separators, the 'marker_modified' 
 "   symbol is used to denote a modified (unsaved) buffer. If
-"   g:buftabs_show_number is set to 0, neither buffer number nor separator is
+"   'buftabs_show_number' is set to 0, neither buffer number nor separator is
 "   shown.
 "
 "   :let g:buftabs_separator = "."  
 "   :let g:buftabs_marker_start = "("
 "   :let g:buftabs_marker_end = ")"
 "   :let g:buftabs_marker_modified = "*"
+"
+"
+" * g:buftabs_blacklist
+"
+"   We might not want to show buftabs when working with some buffers (e.g.
+"   NERDtree). We can add patterns of these buffer names to
+"   'buftabs_blacklist':
+"
+"   :let g:buftabs_blacklist = [ "^NERD_tree_[0-9]*$" ]
 "
 "
 " Changelog
@@ -154,7 +163,6 @@
 "
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
-let w:buftabs_enabled = 0
 let s:original_statusline_left = matchstr(&statusline, ".*#{buftabs}")
 let s:original_statusline_right = matchstr(&statusline, "#{buftabs}.*")
 
@@ -167,11 +175,26 @@ if &diff
 endif     
 
 
+
 "
-" Called on VimEnter event
+" Called on BufEnter event
 "
 
 function! Buftabs_enable()
+  let w:buftabs_enabled = 0
+
+  let l:buftabs_blacklist = [ ]
+  if exists("g:buftabs_blacklist")
+    let l:buftabs_blacklist = g:buftabs_blacklist
+  endif
+
+  " Do not enable buftabs if current buffer name is in the blacklist
+  for name in l:buftabs_blacklist
+    if match(bufname(""), name) != -1
+      return
+    endif
+  endfor
+  
   let w:buftabs_enabled = 1
 endfunction
 
@@ -206,7 +229,7 @@ function! Buftabs_show(deleted_buf)
     let w:from = 0
   endif
 
-  if ! exists("w:buftabs_enabled")
+  if ! exists("w:buftabs_enabled") || w:buftabs_enabled == 0
     return
   endif
 
@@ -333,7 +356,6 @@ function! Buftabs_show(deleted_buf)
   " (persistent)
 
   if exists("g:buftabs_in_statusline")
-    "TODO implement if(bufname('') not in blacklist)
     let &l:statusline = substitute(s:original_statusline_left . s:list . s:original_statusline_right, "#{buftabs}", '', 'g')
   else
     redraw
@@ -359,8 +381,8 @@ endfunction
 " buffers
 "
 
-autocmd WinEnter,CmdwinEnter * call Buftabs_enable()
-autocmd WinEnter,CmdwinEnter,BufNew,BufEnter,BufWritePost * call Buftabs_show(-1)
+autocmd CmdwinEnter,BufEnter * call Buftabs_enable()
+autocmd CmdwinEnter,BufNew,BufEnter,BufWritePost * call Buftabs_show(-1)
 autocmd BufDelete * call Buftabs_show(expand('<abuf>'))
 if version >= 700
   autocmd CursorMoved,CursorMovedI,VimResized * call Buftabs_show(-1)
