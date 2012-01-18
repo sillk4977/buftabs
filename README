@@ -28,5 +28,5 @@ or using control-left and control-right keys:
   :noremap <C-right> :bnext<CR>
 
 
-Some configuration options are available for styling and layout, check the top of the plugin file for instructions.
-
+Some configuration options are available for styling and layout, check the top 
+of the plugin file for instructions.
