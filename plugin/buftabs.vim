@@ -320,14 +320,69 @@ function! Buftabs_show(deleted_buf)
     let l:width -= g:buftabs_other_components_length
   endif
 
-  if(l:start < w:from) 
-    let w:from = l:start - 1
-  endif
   if l:end > w:from + l:width
     let w:from = l:end - l:width 
   endif
-    
+  if(l:start < w:from) 
+    let w:from = l:start
+  endif
+
+  let l:len = strlen(s:list)
   let s:list = strpart(s:list, w:from, l:width)
+  
+  " Show some nice arrows to indicate that some part of the list is chopped
+
+  " Check if left arrow is needed
+
+  let l:offset = 0
+  let l:larrow = w:from > 0
+  if l:larrow
+    let l:loffset = l:start - w:from
+    if l:loffset > 2
+      let l:loffset = 2
+    endif
+    let w:from -= 2 - l:loffset
+    let l:offset += l:loffset
+  endif
+
+  " Check if right arrow is needed
+
+  let l:to = w:from + l:width
+  let l:rarrow = l:to < l:len
+  if l:rarrow
+    let l:roffset = l:end + 2 - l:to
+    if l:roffset < 0
+      let l:roffset = 0
+    endif
+    let w:from += l:roffset
+    let l:offset += l:roffset
+  endif
+
+  " Check left arrow again since right arrow may change it
+
+  if !l:larrow && w:from > 0
+    let l:larrow = 1
+    let l:loffset = l:start - w:from
+    if l:loffset > 2
+      let l:loffset = 2
+    endif
+    let w:from -= 2 - l:loffset
+    let l:offset += l:loffset
+  endif
+
+  " Clean up offset and append arrow
+
+  let l:lmark = ''
+  let l:rmark = ''
+  if l:larrow
+    let l:lmark = '◁ '
+    let l:width -= 2
+  endif
+  if l:rarrow
+    let l:rmark = ' ▷'
+    let l:width -= 2
+  endif
+  let s:list = l:lmark . strpart(s:list, l:offset, l:width) . l:rmark
 
   " Replace the magic characters by visible markers for highlighting the
   " current buffer. The markers can be simple characters like square brackets,
