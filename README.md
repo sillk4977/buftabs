@@ -12,8 +12,8 @@ conflit with other navigation plugins such as nerdtree.
 Screeshots
 ----------
 
-http://i.imgur.com/0LGpi.png
-http://i.imgur.com/JuzDd.png
+* http://i.imgur.com/0LGpi.png
+* http://i.imgur.com/JuzDd.png
 
 
 Usage
@@ -27,9 +27,8 @@ configuration options below.
 It might be handy to create a few maps for easy switching of buffers in your
 .vimrc file. For example:
 
-  noremap <F1> :bprev<CR> 
-  noremap <F2> :bnext<CR>
-  noremap <F4> :confirm bd<CR>
+    noremap <F1> :bprev<CR> noremap <F2> :bnext<CR>
+    noremap <F4> :confirm bd<CR>
 
 
 Configuration
@@ -42,7 +41,7 @@ The following extra configuration variables are availabe:
   This variable makes buftabs only print the filename of each buffer,
   omitting the preceding directory name. To unset, add to your .vimrc:
 
-  :let g:buftabs_only_basename=0
+    :let g:buftabs_only_basename=0
 
 
 * g:buftabs_in_statusline (default 1)
@@ -51,21 +50,21 @@ The following extra configuration variables are availabe:
   instead of the command line. Unset if if you want to show buftabs in the 
   command line:
 
-  :let g:buftabs_in_statusline=0
+    :let g:buftabs_in_statusline=0
    
   By default buftabs will take up the whole statusline. You can
   alternatively specify precisely where it goes using #{buftabs} e.g.:
 
-  :set laststatus=2
-  :set statusline=\ #{buftabs}%=\ \ Ln\ %-5.5l\ Col\ %-4.4v
+    :set laststatus=2
+    :set statusline=\ #{buftabs}%=\ \ Ln\ %-5.5l\ Col\ %-4.4v
 
   NOTICE: If you customize your statusline like above, you will HAVE to 
   specify the total charactor length of non-buftabs components in the 
   statusline. By default, it is 0 since there are no other components. To 
   change:
 
-  " for the example statusline above, length of other components is 20
-  :let g:buftabs_other_components_length=20
+    " for the example statusline above, length of other components is 20
+    :let g:buftabs_other_components_length=20
 
 
 * g:buftabs_active_highlight_group (default '')
@@ -74,7 +73,7 @@ The following extra configuration variables are availabe:
   show the name of the current active buffer. Highlighting is only functional 
   when g:buftabs_in_statusline is set. To change:
 
-  :let g:buftabs_active_highlight_group="Visual"
+    :let g:buftabs_active_highlight_group="Visual"
 
 
 * g:buftabs_show_number     1
@@ -88,10 +87,10 @@ The following extra configuration variables are availabe:
   'buftabs_show_number' is set to 0, neither buffer number nor separator is
   shown. To change:
 
-  :let g:buftabs_separator = "."  
-  :let g:buftabs_marker_start = " "
-  :let g:buftabs_marker_end = " "
-  :let g:buftabs_marker_modified = " +"
+    :let g:buftabs_separator = "."
+    :let g:buftabs_marker_start = " "
+    :let g:buftabs_marker_end = " "
+    :let g:buftabs_marker_modified = " +"
 
 
 * g:buftabs_blacklist (default ["^NERD_tree_[0-9]*$"])
@@ -100,4 +99,4 @@ The following extra configuration variables are availabe:
   NERDtree). You can add patterns of these buffer names to
   'buftabs_blacklist':
 
-  :let g:buftabs_blacklist = ["^NERD_tree_[0-9]*$", "^__Tagbar__$"]
+    :let g:buftabs_blacklist = ["^NERD_tree_[0-9]*$", "^__Tagbar__$"]
