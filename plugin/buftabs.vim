@@ -11,71 +11,85 @@
 " FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
 " more details.
 "
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+"
+" forked by Zefei Xuan
+" repo: https://zefei@github.com/zefei/buftabs.git
+"
+"
 " Introduction
 " ------------
 "
-" This is a simple script that shows a tabs-like list of buffers in the bottom
-" of the window. The biggest advantage of this script over various others is
-" that it does not take any lines away from your terminal, leaving more space
-" for the document you're editing. The tabs are only visible when you need
-" them - when you are switchin between buffers.
+" This is a simple script that shows a tabs-like list of buffers in the 
+" statusline or the command line. The biggest advantage of this script over 
+" various others is that it does not create new window, and thus will not 
+" conflit with other navigation plugins such as nerdtree.
+"
+"
+" Screeshots
+" ----------
+"
+" http://i.imgur.com/0LGpi.png
+" http://i.imgur.com/JuzDd.png
+"
 "
 " Usage
 " -----
 " 
-" This script draws buffer tabs on vim startup, when a new buffer is created
-" and when switching between buffers.
+" Just copy the file to vim plugin directory, it will start showing buffer list 
+" on your statusline. By default, it will take over the entire statusline; but 
+" if you want to use only part of the statusline for buftabs, please check the 
+" configuration options below.
 "
 " It might be handy to create a few maps for easy switching of buffers in your
-" .vimrc file. For example, using F1 and F2 keys:
+" .vimrc file. For example:
 "
-"   noremap <f1> :bprev<CR> 
-"   noremap <f2> :bnext<CR>
+"   noremap <F1> :bprev<CR> 
+"   noremap <F2> :bnext<CR>
+"   noremap <F4> :confirm bd<CR>
 "
-" or using control-left and control-right keys:
 "
-"   :noremap <C-left> :bprev<CR>
-"   :noremap <C-right> :bnext<CR>
-"
+" Configuration
+" -------------
 "
 " The following extra configuration variables are availabe:
 " 
-" * g:buftabs_only_basename
+" * g:buftabs_only_basename (default 1)
 "
-"   Define this variable to make buftabs only print the filename of each buffer,
-"   omitting the preceding directory name. Add to your .vimrc:
+"   This variable makes buftabs only print the filename of each buffer,
+"   omitting the preceding directory name. To unset, add to your .vimrc:
 "
-"   :let g:buftabs_only_basename=1
+"   :let g:buftabs_only_basename=0
 "
 "
-" * g:buftabs_in_statusline
+" * g:buftabs_in_statusline (default 1)
 "
-"   Define this variable to make the plugin show the buftabs in the statusline
-"   instead of the command line. It is a good idea to configure vim to show
-"   the statusline as well when only one window is open. Add to your .vimrc:
+"   This variable makes the plugin show the buftabs in the statusline
+"   instead of the command line. Unset if if you want to show buftabs in the 
+"   command line:
 "
-"   set laststatus=2
-"   :let g:buftabs_in_statusline=1
+"   :let g:buftabs_in_statusline=0
 "    
 "   By default buftabs will take up the whole statusline. You can
 "   alternatively specify precisely where it goes using #{buftabs} e.g.:
 "
-"   set statusline=buf:\ #{buftabs}%=\ Ln\ %-5.5l\ Col\ %-4.4v
+"   :set laststatus=2
+"   :set statusline=\ #{buftabs}%=\ \ Ln\ %-5.5l\ Col\ %-4.4v
 "
-"   If you customize your statusline like above, you will need to specify the
-"   total charactor length of non-buftabs components in the statusline. By
-"   default, it is 0 since there are no other components:
+"   NOTICE: If you customize your statusline like above, you will HAVE to 
+"   specify the total charactor length of non-buftabs components in the 
+"   statusline. By default, it is 0 since there are no other components. To 
+"   change:
 "
-"   :let g:buftabs_other_components_length=23
+"   " for the example statusline above, length of other components is 20
+"   :let g:buftabs_other_components_length=20
 "
 "
-" * g:buftabs_active_highlight_group
-" * g:buftabs_inactive_highlight_group
+" * g:buftabs_active_highlight_group (default '')
 "
 "   The name of a highlight group (:help highligh-groups) which is used to
-"   show the name of the current active buffer and of all other inactive
-"   buffers. If these variables are not defined, no highlighting is used.
-"   (Highlighting is only functional when g:buftabs_in_statusline is enabled)
+"   show the name of the current active buffer. Highlighting is only functional 
+"   when g:buftabs_in_statusline is set. To change:
 "
 "   :let g:buftabs_active_highlight_group="Visual"
 "
@@ -89,82 +103,24 @@
 "   These strings are drawn around each tab as separators, the 'marker_modified' 
 "   symbol is used to denote a modified (unsaved) buffer. If
 "   'buftabs_show_number' is set to 0, neither buffer number nor separator is
-"   shown.
+"   shown. To change:
 "
 "   :let g:buftabs_separator = "."  
-"   :let g:buftabs_marker_start = "("
-"   :let g:buftabs_marker_end = ")"
-"   :let g:buftabs_marker_modified = "*"
+"   :let g:buftabs_marker_start = " "
+"   :let g:buftabs_marker_end = " "
+"   :let g:buftabs_marker_modified = " +"
 "
 "
-" * g:buftabs_blacklist
+" * g:buftabs_blacklist (default ["^NERD_tree_[0-9]*$"])
 "
-"   We might not want to show buftabs when working with some buffers (e.g.
-"   NERDtree). We can add patterns of these buffer names to
+"   You might not want to show buftabs when working with some buffers (e.g.
+"   NERDtree). You can add patterns of these buffer names to
 "   'buftabs_blacklist':
 "
-"   :let g:buftabs_blacklist = [ "^NERD_tree_[0-9]*$" ]
+"   :let g:buftabs_blacklist = ["^NERD_tree_[0-9]*$", "^__Tagbar__$"]
 "
-"
-" Changelog
-" ---------
-" 
-" 0.1  2006-09-22  Initial version 
-"
-" 0.2  2006-09-22  Better handling when the list of buffers is longer then the
-"                  window width.
-"
-" 0.3  2006-09-27  Some cleanups, set 'hidden' mode by default
-"
-" 0.4  2007-02-26  Don't draw buftabs until VimEnter event to avoid clutter at
-"                  startup in some circumstances
-"
-" 0.5  2007-02-26  Added option for showing only filenames without directories
-"                  in tabs
-"
-" 0.6  2007-03-04  'only_basename' changed to a global variable.  Removed
-"                  functions and add event handlers instead.  'hidden' mode 
-"                  broke some things, so is disabled now. Fixed documentation
-"
-" 0.7  2007-03-07  Added configuration option to show tabs in statusline
-"                  instead of cmdline
-"
-" 0.8  2007-04-02  Update buftabs when leaving insertmode
-"
-" 0.9  2007-08-22  Now compatible with older Vim versions < 7.0
-"
-" 0.10 2008-01-26  Added GPL license
-"
-" 0.11 2008-02-29  Added optional syntax highlighting to active buffer name
-"
-" 0.12 2009-03-18  Fixed support for split windows
-"
-" 0.13 2009-05-07  Store and reuse right-aligned part of original statusline
-"
-" 0.14 2010-01-28  Fixed bug that caused buftabs in command line being
-"                  overwritten when 'hidden' mode is enabled.
-" 
-" 0.15 2010-02-16  Fixed window width handling bug which caused strange
-"                  behaviour in combination with the bufferlist plugin.
-"                  Fixed wrong buffer display when deleting last window.
-"                  Added extra options for tabs style and highlighting.
-"
-" 0.16 2010-02-28  Fixed bug causing errors when using buftabs in vim
-"                  diff mode.
-"
-" 0.17 2011-03-11  Changed persistent echo function to restore 'updatetime',
-"                  leading to better behaviour when showing buftabs in the
-"                  status line. (Thanks Alex Bradbury)
-"
-" 0.18 2011-03-12  Added marker for denoting modified buffers, provide
-"                  function for including buftabs into status line descriptor
-"                  instead of buftabs having to edit the status line directly.
-"                  (Thanks Andrew Ho)
 "
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-
-let s:original_statusline_left = matchstr(&statusline, ".*#{buftabs}")
-let s:original_statusline_right = matchstr(&statusline, "#{buftabs}.*")
 
 "
 " Don't bother when in diff mode
@@ -175,6 +131,9 @@ if &diff
 endif     
 
 
+let s:original_statusline_left = matchstr(&statusline, ".*#{buftabs}")
+let s:original_statusline_right = matchstr(&statusline, "#{buftabs}.*")
+
 
 "
 " Called on BufEnter event
@@ -183,7 +142,7 @@ endif
 function! Buftabs_enable()
   let w:buftabs_enabled = 0
 
-  let l:buftabs_blacklist = [ ]
+  let l:buftabs_blacklist = ["^NERD_tree_[0-9]*$"]
   if exists("g:buftabs_blacklist")
     let l:buftabs_blacklist = g:buftabs_blacklist
   endif
@@ -233,6 +192,21 @@ function! Buftabs_show(deleted_buf)
     return
   endif
 
+  let l:buftabs_in_statusline = 1
+  if exists("g:buftabs_in_statusline")
+    let l:buftabs_in_statusline = g:buftabs_in_statusline
+  endif
+
+  let l:buftabs_other_components_length = 0
+  if exists("g:buftabs_other_components_length")
+    let l:buftabs_other_components_length = g:buftabs_other_components_length
+  endif
+
+  let l:buftabs_active_highlight_group = ''
+  if exists("g:buftabs_active_highlight_group")
+    let l:buftabs_active_highlight_group = g:buftabs_active_highlight_group
+  endif
+
   let l:buftabs_show_number = 1
   if exists("g:buftabs_show_number")
     let l:buftabs_show_number = g:buftabs_show_number
@@ -270,10 +244,10 @@ function! Buftabs_show(deleted_buf)
       " Get the name of the current buffer, and escape characters that might
       " mess up the statusline
 
-      if exists("g:buftabs_only_basename")
-        let l:name = fnamemodify(bufname(l:i), ":t")
-      else
+      if exists("g:buftabs_only_basename") && !g:buftabs_only_basename
         let l:name = bufname(l:i)
+      else
+        let l:name = fnamemodify(bufname(l:i), ":t")
       endif
       let l:name = substitute(l:name, "%", "%%", "g")
       if l:name == ""
@@ -316,9 +290,7 @@ function! Buftabs_show(deleted_buf)
   " out the appropriate part
 
   let l:width = winwidth(0)
-  if exists("g:buftabs_other_components_length")
-    let l:width -= g:buftabs_other_components_length
-  endif
+  let l:width -= l:buftabs_other_components_length
 
   if l:end > w:from + l:width
     let w:from = l:end - l:width 
@@ -388,20 +360,11 @@ function! Buftabs_show(deleted_buf)
   " current buffer. The markers can be simple characters like square brackets,
   " but can also be special codes with highlight groups
   
-  if exists("g:buftabs_active_highlight_group")
-    if exists("g:buftabs_in_statusline")
-      let l:buftabs_marker_start = "%#" . g:buftabs_active_highlight_group . "#" . l:buftabs_marker_start
-      let l:buftabs_marker_end = l:buftabs_marker_end . "%##"
-    end
-  end
-
-  if exists("g:buftabs_inactive_highlight_group")
-    if exists("g:buftabs_in_statusline")
-      let s:list = '%#' . g:buftabs_inactive_highlight_group . '#' . s:list
-      let s:list .= '%##'
-      let l:buftabs_marker_end = l:buftabs_marker_end . '%#' . g:buftabs_inactive_highlight_group . '#'
-    end
-  end
+  if l:buftabs_in_statusline
+    set laststatus=2
+    let l:buftabs_marker_start = "%#" . l:buftabs_active_highlight_group . "#" . l:buftabs_marker_start
+    let l:buftabs_marker_end = l:buftabs_marker_end . "%##"
+  endif
 
   let s:list = substitute(s:list, "\x01", l:buftabs_marker_start, 'g')
   let s:list = substitute(s:list, "\x02", l:buftabs_marker_end, 'g')
@@ -410,7 +373,7 @@ function! Buftabs_show(deleted_buf)
   " is displayed in the command line (volatile) or in the statusline
   " (persistent)
 
-  if exists("g:buftabs_in_statusline")
+  if l:buftabs_in_statusline
     let &l:statusline = substitute(s:original_statusline_left . s:list . s:original_statusline_right, "#{buftabs}", '', 'g')
   else
     redraw
