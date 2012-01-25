@@ -14,7 +14,7 @@
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 "
 " forked by Zefei Xuan
-" repo: https://zefei@github.com/zefei/buftabs.git
+" repo: https://github.com/zefei/buftabs
 "
 "
 " Introduction
