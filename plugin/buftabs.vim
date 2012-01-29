@@ -21,9 +21,9 @@
 " ------------
 "
 " This is a simple script that shows a tabs-like list of buffers in the 
-" statusline or the command line. The biggest advantage of this script over 
-" various others is that it does not create new window, and thus will not 
-" conflit with other navigation plugins such as nerdtree.
+" statusline. The biggest advantage of this script over various others is that 
+" it does not create new window, and thus will not conflit with other navigation 
+" plugins such as nerdtree.
 "
 "
 " Screeshots
@@ -54,22 +54,8 @@
 "
 " The following extra configuration variables are availabe:
 " 
-" * g:buftabs_only_basename (default 1)
+" * statusline
 "
-"   This variable makes buftabs only print the filename of each buffer,
-"   omitting the preceding directory name. To unset, add to your .vimrc:
-"
-"   :let g:buftabs_only_basename=0
-"
-"
-" * g:buftabs_in_statusline (default 1)
-"
-"   This variable makes the plugin show the buftabs in the statusline
-"   instead of the command line. Unset if if you want to show buftabs in the 
-"   command line:
-"
-"   :let g:buftabs_in_statusline=0
-"    
 "   By default buftabs will take up the whole statusline. You can
 "   alternatively specify precisely where it goes using #{buftabs} e.g.:
 "
@@ -88,10 +74,17 @@
 " * g:buftabs_active_highlight_group (default '')
 "
 "   The name of a highlight group (:help highligh-groups) which is used to
-"   show the name of the current active buffer. Highlighting is only functional 
-"   when g:buftabs_in_statusline is set. To change:
+"   show the name of the current active buffer. To change:
 "
 "   :let g:buftabs_active_highlight_group="Visual"
+"
+"
+" * g:buftabs_only_basename (default 1)
+"
+"   This variable makes buftabs only print the filename of each buffer,
+"   omitting the preceding directory name. To unset:
+"
+"   :let g:buftabs_only_basename=0
 "
 "
 " * g:buftabs_show_number     1
@@ -159,22 +152,6 @@ endfunction
 
 
 "
-" Persistent echo to avoid overwriting of status line when 'hidden' is enabled
-" 
-
-let s:Pecho=''
-function! s:Pecho(msg)
-  if &ut!=1|let s:hold_ut=&ut|let &ut=1|en
-  let s:Pecho=a:msg
-  aug Pecho
-    au CursorHold * if s:Pecho!=''|echo s:Pecho
-          \|let s:Pecho=''|let &ut=s:hold_ut|en
-        \|aug Pecho|exe 'au!'|aug END|aug! Pecho
-  aug END
-endf
-
-
-"
 " Draw the buftabs
 "
 
@@ -190,11 +167,6 @@ function! Buftabs_show(deleted_buf)
 
   if ! exists("w:buftabs_enabled") || w:buftabs_enabled == 0
     return
-  endif
-
-  let l:buftabs_in_statusline = 1
-  if exists("g:buftabs_in_statusline")
-    let l:buftabs_in_statusline = g:buftabs_in_statusline
   endif
 
   let l:buftabs_other_components_length = 0
@@ -375,25 +347,16 @@ function! Buftabs_show(deleted_buf)
   " current buffer. The markers can be simple characters like square brackets,
   " but can also be special codes with highlight groups
   
-  if l:buftabs_in_statusline
-    set laststatus=2
-    let l:buftabs_marker_start = "%#" . l:buftabs_active_highlight_group . "#" . l:buftabs_marker_start
-    let l:buftabs_marker_end = l:buftabs_marker_end . "%##"
-  endif
+  let l:buftabs_marker_start = "%#" . l:buftabs_active_highlight_group . "#" . l:buftabs_marker_start
+  let l:buftabs_marker_end = l:buftabs_marker_end . "%##"
 
   let s:list = substitute(s:list, "\x01", l:buftabs_marker_start, 'g')
   let s:list = substitute(s:list, "\x02", l:buftabs_marker_end, 'g')
 
-  " Show the list. The buftabs_in_statusline variable determines of the list
-  " is displayed in the command line (volatile) or in the statusline
-  " (persistent)
+  " Show the list.
 
-  if l:buftabs_in_statusline
-    let &l:statusline = substitute(s:original_statusline_left . s:list . s:original_statusline_right, "#{buftabs}", '', 'g')
-  else
-    redraw
-    call s:Pecho(s:list)
-  end
+  set laststatus=2
+  let &l:statusline = substitute(s:original_statusline_left . s:list . s:original_statusline_right, "#{buftabs}", '', 'g')
 
 endfunction
 
@@ -422,4 +385,3 @@ autocmd BufDelete * call Buftabs_show(expand('<abuf>'))
 autocmd CursorMoved,CursorMovedI * call Buftabs_check_mod()
 
 " vi: ts=2 sw=2
-

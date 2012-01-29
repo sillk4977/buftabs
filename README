@@ -4,9 +4,9 @@ Introduction
 ------------
 
 This is a simple script that shows a tabs-like list of buffers in the 
-statusline or the command line. The biggest advantage of this script over 
-various others is that it does not create new window, and thus will not 
-conflit with other navigation plugins such as nerdtree.
+statusline. The biggest advantage of this script over various others is that 
+it does not create new window, and thus will not conflit with other navigation 
+plugins such as nerdtree.
 
 
 Screeshots
@@ -37,22 +37,8 @@ Configuration
 
 The following extra configuration variables are availabe:
 
-* g:buftabs_only_basename (default 1)
+* statusline
 
-  This variable makes buftabs only print the filename of each buffer,
-  omitting the preceding directory name. To unset, add to your .vimrc:
-
-  :let g:buftabs_only_basename=0
-
-
-* g:buftabs_in_statusline (default 1)
-
-  This variable makes the plugin show the buftabs in the statusline
-  instead of the command line. Unset if if you want to show buftabs in the 
-  command line:
-
-  :let g:buftabs_in_statusline=0
-   
   By default buftabs will take up the whole statusline. You can
   alternatively specify precisely where it goes using #{buftabs} e.g.:
 
@@ -71,10 +57,17 @@ The following extra configuration variables are availabe:
 * g:buftabs_active_highlight_group (default '')
 
   The name of a highlight group (:help highligh-groups) which is used to
-  show the name of the current active buffer. Highlighting is only functional 
-  when g:buftabs_in_statusline is set. To change:
+  show the name of the current active buffer. To change:
 
   :let g:buftabs_active_highlight_group="Visual"
+
+
+* g:buftabs_only_basename (default 1)
+
+  This variable makes buftabs only print the filename of each buffer,
+  omitting the preceding directory name. To unset:
+
+  :let g:buftabs_only_basename=0
 
 
 * g:buftabs_show_number     1
