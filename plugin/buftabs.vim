@@ -124,12 +124,20 @@ if &diff
 endif     
 
 
+" Set status line visible
+
+set laststatus=2
+
+
+" Parse statusline to extract #{buftabs}
+
 let s:original_statusline_left = matchstr(&statusline, ".*#{buftabs}")
 let s:original_statusline_right = matchstr(&statusline, "#{buftabs}.*")
 
 
 "
-" Called on BufEnter event
+" Enable buftabs statusline if the initial buffer in the window is not 
+" blacklisted
 "
 
 function! Buftabs_enable()
@@ -152,7 +160,7 @@ endfunction
 
 
 "
-" Draw the buftabs
+" Draw buftabs
 "
 
 function! Buftabs_show(deleted_buf)
@@ -355,7 +363,6 @@ function! Buftabs_show(deleted_buf)
 
   " Show the list.
 
-  set laststatus=2
   let &l:statusline = substitute(s:original_statusline_left . s:list . s:original_statusline_right, "#{buftabs}", '', 'g')
 
 endfunction
