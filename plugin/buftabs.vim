@@ -236,10 +236,18 @@ function! Buftabs_show(deleted_buf)
 
   while(l:i <= bufnr('$'))
 
-    " Only show buffers in the list, and omit help screens unless it is the
-    " current buffer
-  
-    if buflisted(l:i) && getbufvar(l:i, "&modifiable") && a:deleted_buf != l:i || winbufnr(0) == l:i
+    let l:listed = buflisted(l:i) && getbufvar(l:i, "&modifiable") && a:deleted_buf != l:i
+
+    " Only show buffers that are listed; if current buffer is not listed, only 
+    " show current buffer 
+
+    if l:listed || winbufnr(0) == l:i
+
+      " Truncate list if current buffer is not listed
+
+      if !l:listed
+        let s:list = ''
+      endif
 
       " Get the name of the current buffer, and escape characters that might
       " mess up the statusline
@@ -281,6 +289,13 @@ function! Buftabs_show(deleted_buf)
       else
         let s:list = s:list . ' '
       endif
+
+      " Truncate list if current buffer is not listed
+
+      if !l:listed
+        break
+      endif
+
     end
 
     let l:i = l:i + 1
