@@ -29,8 +29,11 @@
 " Screeshots
 " ----------
 "
-" http://i.imgur.com/0LGpi.png
-" http://i.imgur.com/JuzDd.png
+" a few opened files in one window: http://i.imgur.com/stvMQ.png
+" 3 windows - nerdtree, help and files: http://i.imgur.com/Pdsg9.png
+" 3 windows - fugitive and files: http://i.imgur.com/XUoHT.png
+"
+" (color scheme used in screenshots is https://github.com/zefei/simple-dark)
 "
 "
 " Usage
@@ -44,8 +47,8 @@
 " It might be handy to create a few maps for easy switching of buffers in your
 " .vimrc file. For example:
 "
-"   noremap <F1> :bprev<CR> 
-"   noremap <F2> :bnext<CR>
+"   noremap <F1> :bprev!<CR>
+"   noremap <F2> :bnext!<CR>
 "   noremap <F4> :confirm bd<CR>
 "
 "
